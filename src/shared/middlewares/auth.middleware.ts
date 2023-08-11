@@ -1,0 +1,35 @@
+import { HttpException } from '@nestjs/common/exceptions/http.exception';
+import { NestMiddleware, HttpStatus, Injectable, Inject } from '@nestjs/common';
+import { Request, Response, NextFunction } from 'express';
+import * as jwt from 'jsonwebtoken';
+import { UserService } from 'src/modules/user/user.service';
+
+
+@Injectable()
+export class AuthMiddleware implements NestMiddleware {
+  constructor(
+    // @Inject(forwardRef(() => UserService))
+    private readonly userService: UserService
+  ) {}
+
+  async use(req: any, res: Response, next: NextFunction) {
+    const authHeaders = req.headers.authorization;
+    // lazim tetbadel
+    const SECRET = 'hard!to-guess_secret';
+    if (authHeaders && (authHeaders as string).split(' ')[1]) {
+      const token = (authHeaders as string).split(' ')[1];
+      const decoded: any = jwt.verify(token, SECRET);
+      const user = await this.userService.getOneById(decoded.id);
+
+      if (!user) {
+        throw new HttpException('User not found.', HttpStatus.UNAUTHORIZED);
+      }
+
+      req.user = user;
+      next();
+    } else {
+      throw new HttpException('Not authorized.', HttpStatus.UNAUTHORIZED);
+    }
+  }
+}
+
