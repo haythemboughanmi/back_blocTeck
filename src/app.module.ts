@@ -7,6 +7,12 @@ import { UserModule } from './modules/user/user.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { PassportModule } from '@nestjs/passport';
 import { ConfigModule } from '@nestjs/config';
+import { FileUploadModule } from './modules/file-upload/file-upload.module';
+import { MulterConfigService } from './modules/file-upload/multerConfig';
+import { MulterModule } from '@nestjs/platform-express/multer';
+import { Post } from './models/post.entity';
+import { PostModule } from './modules/post/post.module';
+
 @Module({
   imports: [
     ConfigModule.forRoot(),
@@ -17,7 +23,7 @@ import { ConfigModule } from '@nestjs/config';
       username: 'postgres',
       password: 'root',
       database: 'blogteck',
-      entities: [User],
+      entities: [User,Post],
       synchronize: true,
     }),
     PassportModule.register({
@@ -25,6 +31,7 @@ import { ConfigModule } from '@nestjs/config';
     }),
     UserModule,
     AuthModule,
+    PostModule,
   ],
   controllers: [AppController],
   providers: [AppService],

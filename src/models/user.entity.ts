@@ -5,8 +5,11 @@ import {
   UpdateDateColumn,
   BeforeInsert,
   CreateDateColumn,
+  OneToMany,
 } from 'typeorm';
 import * as bcrypt from 'bcryptjs';
+import { Post } from './post.entity';
+ ''
 
 @Entity()
 export class User {
@@ -19,8 +22,18 @@ export class User {
   @Column({ unique: true })
   email: string;
 
+  @Column({ nullable : true})
+  picture : string;
+
+  @Column( { nullable : true})
+  pictureName : string;
+
+
   @Column({ nullable: true })
   password: string;
+
+  @OneToMany(()=> Post , (post)=>  post.ower)
+  posts : Post[]
 
   @CreateDateColumn({
     type: 'timestamp',

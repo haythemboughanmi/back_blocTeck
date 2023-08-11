@@ -21,4 +21,14 @@ export class UserService {
     delete savedUser.password;
     return savedUser
   }
+async getUserById(userId:number): Promise<any>{
+  const userPost= this.userRepository.createQueryBuilder('User')
+  .select('User')
+  .where('User.id = :userId', {userId :userId} )
+  .leftJoinAndSelect('User.posts', 'posts')
+  // .addSelect('posts', 'posts')
+  .getRawMany()
+  return userPost
+}
+
 }
